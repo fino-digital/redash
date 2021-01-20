@@ -13,6 +13,9 @@ FROM redash/base:debian
 # Controls whether to install extra dependencies needed for all data sources.
 ARG skip_ds_deps
 
+# Use legacy resolver to work around broken build due to resolver changes in pip
+ENV PIP_USE_DEPRECATED=legacy-resolver
+
 # We first copy only the requirements file, to avoid rebuilding on every file
 # change.
 COPY requirements.txt requirements_bundles.txt requirements_dev.txt requirements_all_ds.txt ./
