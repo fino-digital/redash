@@ -194,21 +194,16 @@ class MongoDB(BaseQueryRunner):
         # document written.
         collection_is_a_view = self._is_collection_a_view(db, collection_name)
         documents_sample = []
-        try:
-            if collection_is_a_view:
-                for d in db[collection_name].find().limit(2):
-                    documents_sample.append(d)
-            else:
-                for d in db[collection_name].find().sort([("$natural", 1)]).limit(1):
-                    documents_sample.append(d)
+        if collection_is_a_view:
+            for d in db[collection_name].find().limit(2):
+                documents_sample.append(d)
+        else:
+            for d in db[collection_name].find().sort([("$natural", 1)]).limit(1):
+                documents_sample.append(d)
 
-                for d in db[collection_name].find().sort([("$natural", -1)]).limit(1):
-                    documents_sample.append(d)
-        except pymongo.errors.OperationFailure:
-            # Users may have role privileges that only grant access to specific collections
-            logger.debug("Unable to get document to get document samples.")
-            raise e
-            
+            for d in db[collection_name].find().sort([("$natural", -1)]).limit(1):
+                documents_sample.append(d)
+
         columns = []
         for d in documents_sample:
             self._merge_property_names(columns, d)
